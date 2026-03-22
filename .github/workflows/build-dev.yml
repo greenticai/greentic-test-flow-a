@@ -1,0 +1,32 @@
+name: Dev Build (deps-dev overlay)
+
+on:
+  push:
+    branches: ["develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Apply dev dependency overrides from ci/deps-dev.toml
+        run: |
+          TAG=$(grep '^test-types\s*=\s*"' ci/deps-dev.toml | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Using test-types tag from ci/deps-dev.toml: ${TAG}"
+          sed -i -E "s#(test-types = \{[^}]*tag = \")([^"]+)(\"[^}]*\})#\1${TAG}\3#" Cargo.toml
+          echo "Resolved dependency line in Cargo.toml:"
+          grep '^test-types\s*=\s*' Cargo.toml
+
+      - name: Configure git auth for private dependencies
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.RENOVATE_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Build
+        run: cargo build -v
