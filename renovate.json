@@ -2,7 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "enabledManagers": ["cargo"],
-  "allowCustomCrateRegistries": true,
   "labels": ["dependencies", "renovate"],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
