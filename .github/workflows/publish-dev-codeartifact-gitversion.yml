@@ -45,15 +45,11 @@ jobs:
             fi
           done < ci/deps-dev.toml
 
-      - name: Compute version
+      - name: Set version in Cargo.toml
         id: ver
         run: |
           VERSION="${{ steps.gitversion.outputs.majorMinorPatch }}-dev.${{ github.run_number }}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Set version in Cargo.toml
-        run: |
-          VERSION="${{ steps.ver.outputs.version }}"
           sed -i -E "s/^version\s*=\s*\".*\"/version = \"${VERSION}\"/" Cargo.toml
           echo "Publishing version: ${VERSION}"
           grep '^version\s*=\s*' Cargo.toml
