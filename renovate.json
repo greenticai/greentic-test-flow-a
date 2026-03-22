@@ -9,6 +9,7 @@
   "rangeStrategy": "bump",
   "rebaseWhen": "behind-base-branch",
   "recreateWhen": "always",
+  "platformAutomerge": false,
   "packageRules": [
     {
       "matchDepNames": ["test-types"],
