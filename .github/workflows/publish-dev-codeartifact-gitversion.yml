@@ -47,11 +47,22 @@ jobs:
         run: |
           matched=0
           while IFS= read -r line; do
-            DEP_NAME=$(printf '%s\n' "$line" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1}')
-            DEP_VERSION=$(printf '%s\n' "$line" | awk 'match($0, /"[^"]+"/){print substr($0, RSTART+1, RLENGTH-2)}')
-            if [[ -z "$DEP_NAME" || "$DEP_NAME" =~ ^\[ || -z "$DEP_VERSION" ]]; then
+            DEP_NAME="${line%%=*}"
+            DEP_NAME="${DEP_NAME//[$'\t\r\n ']/}"
+            if [[ -z "$DEP_NAME" || "$DEP_NAME" == \[* ]]; then
               continue
             fi
+
+            REST="${line#*=}"
+            if [[ "$REST" != *\"*\"* ]]; then
+              continue
+            fi
+            DEP_VERSION="${REST#*\"}"
+            DEP_VERSION="${DEP_VERSION%%\"*}"
+            if [[ -z "$DEP_VERSION" ]]; then
+              continue
+            fi
+
             matched=1
             echo "Using ${DEP_NAME} version for publish: ${DEP_VERSION}"
             sed -i -E "s#^[[:space:]]*${DEP_NAME}[[:space:]]*=.*#${DEP_NAME} = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
