@@ -47,19 +47,10 @@ jobs:
         run: |
           matched=0
           while IFS= read -r line; do
-            DEP_NAME="${line%%=*}"
-            DEP_NAME="${DEP_NAME//[$'\t\r\n ']/}"
-            if [[ -z "$DEP_NAME" || "$DEP_NAME" == \[* ]]; then
-              continue
-            fi
+            DEP_NAME=$(printf '%s\n' "$line" | cut -d '=' -f1 | tr -d '[:space:]')
+            DEP_VERSION=$(printf '%s\n' "$line" | grep -oE '"[^"]+"' | head -n1 | tr -d '"')
 
-            REST="${line#*=}"
-            if [[ "$REST" != *\"*\"* ]]; then
-              continue
-            fi
-            DEP_VERSION="${REST#*\"}"
-            DEP_VERSION="${DEP_VERSION%%\"*}"
-            if [[ -z "$DEP_VERSION" ]]; then
+            if [[ -z "$DEP_NAME" || "$DEP_NAME" == \[* || -z "$DEP_VERSION" ]]; then
               continue
             fi
 
