@@ -1,19 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "enabledManagers": ["cargo"],
+  "enabledManagers": ["custom.regex"],
   "labels": ["dependencies", "renovate"],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
-  "baseBranches": ["main"],
-  "rangeStrategy": "bump",
+  "baseBranches": ["develop"],
   "rebaseWhen": "behind-base-branch",
   "recreateWhen": "always",
   "platformAutomerge": false,
   "ignoreTests": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^ci\\/deps-dev\\.toml$/"],
+      "matchStrings": [
+        "(?<depName>[^\\s=]+)\\s*=\\s*\"(?<currentValue>[^\"]+)\"\\s+#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+packageName=(?<packageName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?"
+      ]
+    }
+  ],
   "packageRules": [
     {
       "matchDepNames": ["test-types"],
+      "ignoreUnstable": false,
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash"
