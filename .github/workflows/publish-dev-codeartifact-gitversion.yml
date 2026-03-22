@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: gittools/actions/gitversion/setup@v3
+        with:
+          versionSpec: "6.x"
+
+      - id: gitversion
+        uses: gittools/actions/gitversion/execute@v3
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -31,15 +40,19 @@ jobs:
           sed -i -E "s#^test-types = .*#test-types = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
           grep '^test-types\s*=\s*' Cargo.toml
 
-      - name: Set crate dev version
+      - name: Compute version
         id: ver
         run: |
-          BASE=$(sed -nE 's/^version\s*=\s*"([^"]+)"/\1/p' Cargo.toml | head -n1)
-          BASE="${BASE%%-dev.*}"
-          VERSION="${BASE}-dev.${GITHUB_RUN_NUMBER}"
+          VERSION="${{ steps.gitversion.outputs.majorMinorPatch }}-dev.${{ github.run_number }}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set version in Cargo.toml
+        run: |
+          VERSION='${{ steps.ver.outputs.version }}'
           sed -i -E "s/^version\s*=\s*\".*\"/version = \"${VERSION}\"/" Cargo.toml
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          grep '^version\s*=\s*' Cargo.toml`n
+          echo "Publishing version: ${VERSION}"
+          grep '^version\s*=\s*' Cargo.toml
+
       - name: Fetch CodeArtifact token
         run: |
           TOKEN=$(aws codeartifact get-authorization-token \
@@ -50,9 +63,6 @@ jobs:
             --output text)
           echo "::add-mask::$TOKEN"
           echo "CARGO_REGISTRIES_CORP_ARTIFACTS_GREENTIC_TEST_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-
-      - name: Build
-        run: cargo build -v
 
       - name: Publish crate (gate)
         run: cargo publish --registry corp-artifacts-greentic-test --allow-dirty
