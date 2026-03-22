@@ -47,15 +47,17 @@ jobs:
         run: |
           matched=0
           while IFS= read -r line; do
-            DEP_NAME=$(echo "$line" | sed -nE 's/^[[:space:]]*([a-zA-Z0-9_-]+)[[:space:]]*=[[:space:]]*"([^"]+)".*$/\1/p')
-            DEP_VERSION=$(echo "$line" | sed -nE 's/^[[:space:]]*([a-zA-Z0-9_-]+)[[:space:]]*=[[:space:]]*"([^"]+)".*$/\2/p')
-            if [[ -n "$DEP_NAME" && -n "$DEP_VERSION" ]]; then
-              matched=1
-              echo "Using ${DEP_NAME} version for publish: ${DEP_VERSION}"
-              sed -i -E "s#^[[:space:]]*${DEP_NAME}[[:space:]]*=.*#${DEP_NAME} = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
-              grep -E "^${DEP_NAME}[[:space:]]*=.*registry[[:space:]]*=[[:space:]]*\"corp-artifacts-greentic-test\"" Cargo.toml
+            DEP_NAME=$(printf '%s\n' "$line" | awk -F= '{gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1}')
+            DEP_VERSION=$(printf '%s\n' "$line" | awk 'match($0, /"[^"]+"/){print substr($0, RSTART+1, RLENGTH-2)}')
+            if [[ -z "$DEP_NAME" || "$DEP_NAME" =~ ^\[ || -z "$DEP_VERSION" ]]; then
+              continue
             fi
+            matched=1
+            echo "Using ${DEP_NAME} version for publish: ${DEP_VERSION}"
+            sed -i -E "s#^[[:space:]]*${DEP_NAME}[[:space:]]*=.*#${DEP_NAME} = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
+            grep -E "^${DEP_NAME}[[:space:]]*=.*registry[[:space:]]*=[[:space:]]*\"corp-artifacts-greentic-test\"" Cargo.toml
           done < ci/deps-dev.toml
+
           if [[ $matched -eq 0 ]]; then
             echo "No dependencies parsed from ci/deps-dev.toml"
             cat ci/deps-dev.toml
