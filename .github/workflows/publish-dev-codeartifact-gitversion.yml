@@ -39,17 +39,7 @@ jobs:
           VERSION="${BASE}-dev.${GITHUB_RUN_NUMBER}"
           sed -i -E "s/^version\s*=\s*\".*\"/version = \"${VERSION}\"/" Cargo.toml
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          grep '^version\s*=\s*' Cargo.toml
-
-      - name: Configure Cargo registry
-        run: |
-          mkdir -p .cargo
-          cat > .cargo/config.toml << 'EOF'
-          [registries.corp-artifacts-greentic-test]
-          index = "sparse+https://corp-artifacts-599558443099.d.codeartifact.eu-north-1.amazonaws.com/cargo/greentic/"
-          credential-provider = "cargo:token"
-          EOF
-
+          grep '^version\s*=\s*' Cargo.toml`n
       - name: Fetch CodeArtifact token
         run: |
           TOKEN=$(aws codeartifact get-authorization-token \
