@@ -6,4 +6,4 @@ license = "MIT"
 
 [dependencies]
 test-types = { git = "https://github.com/greenticai/greentic-test-types", tag = "v0.1.0" }
-serde = "=1.0.0"
+serde = "=1.0.228"
