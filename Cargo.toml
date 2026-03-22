@@ -1,8 +1,1 @@
-[package]
-name = "test-flow-a"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
-
-[dependencies]
-test-types = { version = "=0.1.0-dev.2", registry = "corp-artifacts-greentic-test" }
+[package]`nname = "test-flow-a"`nversion = "0.1.0"`nedition = "2021"`nlicense = "MIT"`n`n[dependencies]`ntest-types = { git = "https://github.com/greenticai/greentic-test-types", tag = "v0.1.2" }`n
