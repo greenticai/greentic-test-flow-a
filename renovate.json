@@ -7,5 +7,6 @@
   "prConcurrentLimit": 10,
   "baseBranches": ["main"],
   "rangeStrategy": "bump",
+  "rebaseWhen": "behind-base-branch",
   "recreateWhen": "always"
 }
