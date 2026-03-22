@@ -10,6 +10,7 @@
   "rebaseWhen": "behind-base-branch",
   "recreateWhen": "always",
   "platformAutomerge": false,
+  "ignoreTests": true,
   "packageRules": [
     {
       "matchDepNames": ["test-types"],
