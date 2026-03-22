@@ -8,5 +8,13 @@
   "baseBranches": ["main"],
   "rangeStrategy": "bump",
   "rebaseWhen": "behind-base-branch",
-  "recreateWhen": "always"
+  "recreateWhen": "always",
+  "packageRules": [
+    {
+      "matchPackageNames": ["test-types"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    }
+  ]
 }
