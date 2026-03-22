@@ -38,7 +38,7 @@ jobs:
             if [[ "$line" =~ ^[[:space:]]*([a-zA-Z0-9_-]+)[[:space:]]*=[[:space:]]*"([^"]+)"[[:space:]]*$ ]]; then
               DEP_NAME="${BASH_REMATCH[1]}"
               TAG="${BASH_REMATCH[2]}"
-              DEP_VERSION="${TAG#v}"
+              DEP_VERSION="${TAG}"
               echo "Using ${DEP_NAME} version for publish: ${DEP_VERSION}"
               sed -i -E "s#^${DEP_NAME}[[:space:]]*=.*#${DEP_NAME} = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
               grep -E "^${DEP_NAME}[[:space:]]*=" Cargo.toml
@@ -53,7 +53,7 @@ jobs:
 
       - name: Set version in Cargo.toml
         run: |
-          VERSION='${{ steps.ver.outputs.version }}'
+          VERSION="${{ steps.ver.outputs.version }}"
           sed -i -E "s/^version\s*=\s*\".*\"/version = \"${VERSION}\"/" Cargo.toml
           echo "Publishing version: ${VERSION}"
           grep '^version\s*=\s*' Cargo.toml
@@ -76,7 +76,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v${{ steps.ver.outputs.version }}"
+          TAG="${{ steps.ver.outputs.version }}"
           if gh api "repos/${{ github.repository }}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
             echo "Tag ${TAG} already exists"
           else
