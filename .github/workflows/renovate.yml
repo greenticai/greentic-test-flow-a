@@ -42,4 +42,4 @@ jobs:
           RENOVATE_ALLOW_CUSTOM_CRATE_REGISTRIES: true
           CARGO_REGISTRIES_CORP_ARTIFACTS_GREENTIC_TEST_TOKEN: ${{ steps.codeartifact.outputs.token }}
           RENOVATE_HOST_RULES: >-
-            [{"matchHost":"corp-artifacts-599558443099.d.codeartifact.eu-north-1.amazonaws.com","hostType":"crate","token":"${{ steps.codeartifact.outputs.token }}"},{"matchHost":"corp-artifacts-599558443099.d.codeartifact.eu-north-1.amazonaws.com","hostType":"crate","username":"aws","password":"${{ steps.codeartifact.outputs.token }}"}]
+            [{"matchHost":"corp-artifacts-599558443099.d.codeartifact.eu-north-1.amazonaws.com","hostType":"crate","token":"${{ steps.codeartifact.outputs.token }}"}]
