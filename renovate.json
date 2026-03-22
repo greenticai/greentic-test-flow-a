@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["cargo"],
+  "labels": ["dependencies", "renovate"],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
+  "baseBranches": ["main"],
+  "rangeStrategy": "bump",
+  "rebaseWhen": "behind-base-branch",
+  "recreateWhen": "always",
+  "platformAutomerge": false,
+  "ignoreTests": true,
+  "packageRules": [
+    {
+      "matchDepNames": ["test-types"],
+      "ignoreUnstable": false,
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    }
+  ]
+}
