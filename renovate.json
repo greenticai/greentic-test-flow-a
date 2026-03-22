@@ -6,5 +6,11 @@
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
   "baseBranches": ["main"],
-  "rangeStrategy": "bump"
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "matchPackageNames": ["test-types"],
+      "ignoreUnstable": false
+    }
+  ]
 }
