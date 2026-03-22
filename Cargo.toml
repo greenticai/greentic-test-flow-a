@@ -5,4 +5,4 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-test-types = { version = "=0.1.0-dev.2", registry = "corp-artifacts-greentic-test" }
+test-types = { version = "=0.1.3-dev.2", registry = "corp-artifacts-greentic-test" }
