@@ -18,9 +18,10 @@ jobs:
 
       - name: Apply dev dependency overrides from ci/deps-dev.toml
         run: |
-          TAG=$(grep '^test-types\s*=\s*"' ci/deps-dev.toml | sed -E 's/.*"([^"]+)".*/\1/')
+          TAG=$(sed -nE 's/^test-types\s*=\s*"([^"]+)".*/\1/p' ci/deps-dev.toml | head -n1)
           echo "Using test-types tag from ci/deps-dev.toml: ${TAG}"
-          sed -i -E "s#(test-types = \{[^}]*tag = \")([^"]+)(\"[^}]*\})#\1${TAG}\3#" Cargo.toml
+          awk -v tag="$TAG" '/^test-types[[:space:]]*=/{sub(/tag = "[^"]+"/, "tag = \"" tag "\"")}1' Cargo.toml > Cargo.toml.tmp
+          mv Cargo.toml.tmp Cargo.toml
           echo "Resolved dependency line in Cargo.toml:"
           grep '^test-types\s*=\s*' Cargo.toml
 
