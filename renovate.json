@@ -11,7 +11,7 @@
   "recreateWhen": "always",
   "packageRules": [
     {
-      "matchPackageNames": ["test-types"],
+      "matchDepNames": ["test-types"],
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "squash"
