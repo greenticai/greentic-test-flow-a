@@ -1,2 +1,2 @@
 [git_tags]
-test-types = "v0.1.3-dev.14" # renovate: datasource=github-tags packageName=greenticai/greentic-test-types versioning=loose
+test-types = "v0.1.3-dev.16" # renovate: datasource=github-tags packageName=greenticai/greentic-test-types versioning=loose
