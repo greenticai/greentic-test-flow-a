@@ -32,6 +32,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Fetch CodeArtifact token
+        run: |
+          TOKEN=$(aws codeartifact get-authorization-token \
+            --domain corp-artifacts \
+            --domain-owner 599558443099 \
+            --region eu-north-1 \
+            --query authorizationToken \
+            --output text)
+          echo "::add-mask::$TOKEN"
+          echo "CARGO_REGISTRIES_CORP_ARTIFACTS_GREENTIC_TEST_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
       - name: Apply deps-dev overlay for publish
         run: |
           while IFS= read -r line; do
@@ -53,17 +64,6 @@ jobs:
           sed -i -E "s/^version\s*=\s*\".*\"/version = \"${VERSION}\"/" Cargo.toml
           echo "Publishing version: ${VERSION}"
           grep '^version\s*=\s*' Cargo.toml
-
-      - name: Fetch CodeArtifact token
-        run: |
-          TOKEN=$(aws codeartifact get-authorization-token \
-            --domain corp-artifacts \
-            --domain-owner 599558443099 \
-            --region eu-north-1 \
-            --query authorizationToken \
-            --output text)
-          echo "::add-mask::$TOKEN"
-          echo "CARGO_REGISTRIES_CORP_ARTIFACTS_GREENTIC_TEST_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 
       - name: Publish crate (gate)
         run: cargo publish --registry corp-artifacts-greentic-test --allow-dirty
