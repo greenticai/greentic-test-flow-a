@@ -28,12 +28,7 @@
                              "ignoreUnstable":  false,
                              "automerge":  true,
                              "automergeType":  "pr",
-                             "automergeStrategy":  "squash",
-                             "matchDatasources":  [
-                                                      "github-tags"
-                                                  ],
-                             "extractVersion":  "^v(?\u003cversion\u003e.+)$",
-                             "versioning":  "semver"
+                             "automergeStrategy":  "squash"
                          }
                      ]
 }
