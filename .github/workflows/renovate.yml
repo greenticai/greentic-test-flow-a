@@ -30,6 +30,7 @@ jobs:
             --region eu-north-1 \
             --query authorizationToken \
             --output text)
+          echo "::add-mask::$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Run Renovate
@@ -37,5 +38,6 @@ jobs:
         env:
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_REPOSITORIES: ${{ github.repository }}
-          LOG_LEVEL: debug
+          LOG_LEVEL: info
+          RENOVATE_ALLOW_CUSTOM_CRATE_REGISTRIES: true
           CARGO_REGISTRIES_CORP_ARTIFACTS_GREENTIC_TEST_TOKEN: ${{ steps.codeartifact.outputs.token }}
