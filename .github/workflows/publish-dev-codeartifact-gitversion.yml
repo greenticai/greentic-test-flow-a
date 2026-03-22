@@ -46,19 +46,25 @@ jobs:
       - name: Apply deps-dev overlay for publish
         run: |
           matched=0
-          while IFS= read -r line; do
-            DEP_NAME=$(printf '%s\n' "$line" | cut -d '=' -f1 | tr -d '[:space:]')
-            DEP_VERSION=$(printf '%s\n' "$line" | grep -oE '"[^"]+"' | head -n1 | tr -d '"')
-
-            if [[ -z "$DEP_NAME" || "$DEP_NAME" == \[* || -z "$DEP_VERSION" ]]; then
-              continue
-            fi
-
+          while IFS=$'\t' read -r DEP_NAME DEP_VERSION; do
+            [[ -z "$DEP_NAME" || -z "$DEP_VERSION" ]] && continue
             matched=1
             echo "Using ${DEP_NAME} version for publish: ${DEP_VERSION}"
             sed -i -E "s#^[[:space:]]*${DEP_NAME}[[:space:]]*=.*#${DEP_NAME} = { version = \"=${DEP_VERSION}\", registry = \"corp-artifacts-greentic-test\" }#" Cargo.toml
             grep -E "^${DEP_NAME}[[:space:]]*=.*registry[[:space:]]*=[[:space:]]*\"corp-artifacts-greentic-test\"" Cargo.toml
-          done < ci/deps-dev.toml
+          done < <(
+            awk '
+              /^[[:space:]]*[a-zA-Z0-9_-]+[[:space:]]*=/ {
+                split($0, a, "=")
+                name=a[1]
+                gsub(/[[:space:]]/, "", name)
+                if (match($0, /"[^"]+"/)) {
+                  ver=substr($0, RSTART+1, RLENGTH-2)
+                  print name "\t" ver
+                }
+              }
+            ' ci/deps-dev.toml
+          )
 
           if [[ $matched -eq 0 ]]; then
             echo "No dependencies parsed from ci/deps-dev.toml"
