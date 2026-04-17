@@ -27,7 +27,7 @@ jobs:
       - id: gitversion
         uses: gittools/actions/gitversion/execute@v3
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.94.0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
